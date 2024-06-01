@@ -1,15 +1,15 @@
 package com.example.transferencias.controller;
 
 import com.example.transferencias.cliente.Cliente;
-import com.example.transferencias.cliente.ClienteRepository;
-import com.example.transferencias.cliente.DadosCadastroCliente;
-import jakarta.validation.constraints.NotNull;
+import com.example.transferencias.repository.ClienteRepository;
+import com.example.transferencias.DTO.DadosCadastroCliente;
+import com.example.transferencias.DTO.DadosListagemCliente;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping ("cliente")
@@ -21,8 +21,13 @@ public class ClienteController {
 
     @PostMapping
     @Transactional
-    public void cadastro(@RequestBody @NotNull DadosCadastroCliente dados) {
-        clienteRepository.save(new Cliente(null, dados.nome(), dados.numeroDaConta(), dados.saldoDaConta()));
+    public Cliente cadastro(@RequestBody @Valid DadosCadastroCliente dados) {
+       return clienteRepository.save(new Cliente(dados));
+
+    }
+    @GetMapping
+    public List<DadosListagemCliente> listar(){
+        return clienteRepository.findAll().stream().map(DadosListagemCliente::new).toList();
 
     }
 
